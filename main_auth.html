@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>mercury's birthday</title>
+  <link rel="stylesheet" href="main_auth.css"/>
+</head>
+<body>
+  <div class="banner">
+    <p class="subtitle">type in secret code :3</p>
+      <br>
+      <input type="text" id="codeInput" placeholder="Enter code here" />
+    <br>
+    <br>
+    <button onclick="validateCode()">Continue</button>
+
+    <p id="message" style="color: lightpink; margin-top: 10px;"></p>
+  </div>
+
+  <button class="bottomback" onclick="goToPage()"">
+    return to prev
+  </button>
+  <script>
+    function validateCode() {
+      const input = document.getElementById('codeInput').value;
+
+      if (input === "yuara") {
+        window.location.href = "bday1.html";  
+      } else {
+        message.textContent = "incorrect code. no access.";
+      }
+    }
+    function goToPage() {
+        window.location.href = "bday.html";  // Replace "yourpage.html" with the actual page
+    }
+  </script>
+  </div>
+</html>

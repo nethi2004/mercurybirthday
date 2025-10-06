@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>for you</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single+Ink:wght@100..900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand';
+      background-color: #972079;
+      color: lightpink;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 50px;
+    }
+
+    h1 {
+        font-family: 'Bitcount Prop Single Ink';
+      margin-bottom: 20px;
+      font-size: 75px;
+    }
+
+    #board {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 5px;
+    }
+
+    .tile {
+      width: 50px;
+      height: 50px;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .green {
+      background-color: #538d4e;
+      color: white;
+      border: none;
+    }
+
+    .yellow {
+      background-color: #b59f3b;
+      color: white;
+      border: none;
+    }
+
+    .gray {
+      background-color: #3a3a3c;
+      color: white;
+      border: none;
+    }
+
+    #guessForm {
+      margin-top: 20px;
+    }
+
+
+.bottomback {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #CE69B5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+    button {
+        padding: 1px 6px;
+        background-color: #CE69B5;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        margin-left: 10px;
+    }
+button:hover {
+  background-color: #561546;
+}
+
+input{
+    background-color: #DCC1D5;
+    color: #972079;
+    font-family: 'Quicksand';
+    font-size: 15px;
+    height: 30px;
+    width: 300px;
+    text-transform: uppercase;
+}
+
+input::placeholder{
+    color:#972079;
+    opacity: 0.75;
+}
+
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mini Wordle</h1>
+  <div id="board"></div>
+
+  <form id="guessForm" onsubmit="handleGuess(event)">
+    <input type="text" id="guessInput" maxlength="5" autofocus placeholder="guess the word"/>
+    <button type="submit">Guess</button>
+  </form>
+
+  <div id="message"></div>
+  <button id="newGameBtn" style="display: none; margin-top: 15px;" onclick="startNewGame()">New Game</button>
+
+  <button class="bottomback" onclick="goToPage()"">
+    return to prev
+  </button>
+
+  <script>
+    const wordList = ["TREAT", "CRANE", "PLANT", "GHOST", "SHINE", "GRAPE", "BRICK"];
+    const secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+    const maxAttempts = 6;
+    let currentAttempt = 0;
+
+    const board = document.getElementById('board');
+    const message = document.getElementById('message');
+
+    // Create empty board
+    for (let i = 0; i < maxAttempts; i++) {
+      const row = document.createElement('div');
+      row.classList.add('row');
+      for (let j = 0; j < 5; j++) {
+        const tile = document.createElement('div');
+        tile.classList.add('tile');
+        row.appendChild(tile);
+      }
+      board.appendChild(row);
+    }
+
+    function goToPage() {
+        window.location.href = "bday2.html";  // Replace "yourpage.html" with the actual page
+    }
+
+    function startNewGame() {
+        location.reload(); // Reloads the page to reset the game
+    }
+
+    function handleGuess(event) {
+      event.preventDefault();
+      const input = document.getElementById('guessInput');
+      const guess = input.value.toUpperCase();
+
+      if (guess.length !== 5) {
+        message.textContent = "Please enter a 5-letter word.";
+        return;
+      }
+
+      if (currentAttempt >= maxAttempts) return;
+
+      const row = board.children[currentAttempt];
+      const secretArray = secretWord.split('');
+      const guessArray = guess.split('');
+      const colorResult = Array(5).fill('gray');
+
+      // Step 1: Check for correct position (green)
+      for (let i = 0; i < 5; i++) {
+        if (guessArray[i] === secretArray[i]) {
+          colorResult[i] = 'green';
+          secretArray[i] = null; // Mark as used
+          guessArray[i] = null;
+        }
+      }
+
+      // Step 2: Check for correct letters in wrong position (yellow)
+      for (let i = 0; i < 5; i++) {
+        if (guessArray[i] && secretArray.includes(guessArray[i])) {
+          colorResult[i] = 'yellow';
+          secretArray[secretArray.indexOf(guessArray[i])] = null;
+        }
+      }
+
+      // Display tiles
+      for (let i = 0; i < 5; i++) {
+        const tile = row.children[i];
+        tile.textContent = guess[i];
+        tile.classList.add(colorResult[i]);
+      }
+
+      if (guess === secretWord) {
+        message.textContent = "omg correct! you did it you're so smart!";
+        document.getElementById("guessInput").disabled = true;
+        document.getElementById("newGameBtn").style.display = "inline-block";
+        return;
+      }
+
+      currentAttempt++;
+      input.value = "";
+
+      if (currentAttempt === maxAttempts) {
+        message.textContent = `womp womp! The word was: ${secretWord}`;
+        input.disabled = true;
+        document.getElementById("newGameBtn").style.display = "inline-block";
+      }
+    }
+  </script>
+</body>
+</html>

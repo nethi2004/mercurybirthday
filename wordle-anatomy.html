@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>for you</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single+Ink:wght@100..900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand';
+      background-color: #3C0F52;
+      color: plum;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 50px;
+    }
+
+    h1 {
+        font-family: 'Bitcount Prop Single Ink';
+      margin-bottom: 20px;
+      font-size: 75px;
+    }
+
+    #board {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 5px;
+    }
+
+    .tile {
+      width: 50px;
+      height: 50px;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .green {
+      background-color: #538d4e;
+      color: white;
+      border: none;
+    }
+
+    .yellow {
+      background-color: #b59f3b;
+      color: white;
+      border: none;
+    }
+
+    .gray {
+      background-color: #3a3a3c;
+      color: white;
+      border: none;
+    }
+
+    #guessForm {
+      margin-top: 20px;
+    }
+
+
+    .bottomback {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #CE93EC;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+
+    button {
+        padding: 1px 6px;
+        background-color: #CE93EC;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        margin-left: 10px;
+    }
+
+    button:hover {
+  background-color: #6D3C86;
+}
+input{
+    background-color: #DCC1D5;
+    color: #6D3C86;
+    font-family: 'Quicksand';
+    font-size: 15px;
+    height: 30px;
+    width: 300px;
+    text-transform: uppercase;
+}
+
+input::placeholder{
+    color:#6D3C86;
+    opacity: 0.75;
+}
+
+#hint{
+    color: white;
+}
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wordle - Anatomy edition</h1>
+
+  
+  <div id="board"></div> <br>
+  <div id="hint" style="margin-bottom: 15px; font-style: italic;"></div>
+  <form id="guessForm" onsubmit="handleGuess(event)">
+    <input type="text" id="guessInput" maxlength="5" autofocus placeholder="guess the word"/>
+    <button type="submit">Guess</button>
+  </form>
+
+  <div id="message"></div>
+  <button id="newGameBtn" style="display: none; margin-top: 15px;" onclick="startNewGame()">New Game</button>
+
+  <button class="bottomback" onclick="goToPage()"">
+    return to prev
+  </button>
+
+  <script>
+    const wordList = [
+  { word: "FEMUR", hint: "The longest and strongest bone in the human body." },
+  { word: "BICEP", hint: "A muscle on the front of the upper arm, involved in lifting." },
+  { word: "ULNA", hint: "A forearm bone located on the side opposite the thumb." },
+  { word: "TIBIA", hint: "The larger and stronger of the two lower leg bones." },
+  { word: "SCAPULA", hint: "Also known as the shoulder blade." },
+  { word: "HUMERUS", hint: "Bone of the upper arm or forelimb, forming joints at the shoulder and the elbow." },
+  { word: "CLAVICLE", hint: "The collarbone, connecting the sternum and scapula." },
+  { word: "TRICEPS", hint: "The muscle on the back of the upper arm." },
+  { word: "MANDIBLE", hint: "The lower jawbone." },
+  { word: "STERNUM", hint: "The flat bone located in the center of the chest." },
+  
+];
+
+const selected = wordList[Math.floor(Math.random() * wordList.length)];
+const secretWord = selected.word.toUpperCase();
+const hint = selected.hint;
+
+const maxAttempts = 6;
+let currentAttempt = 0;
+
+const board = document.getElementById('board');
+const message = document.getElementById('message');
+const hintBox = document.getElementById('hint');
+hintBox.textContent = `Hint: ${hint}`;
+
+// Adjust input length dynamically
+document.getElementById('guessInput').setAttribute('maxlength', secretWord.length);
+
+// Create game board rows dynamically
+for (let i = 0; i < maxAttempts; i++) {
+  const row = document.createElement('div');
+  row.classList.add('row');
+  for (let j = 0; j < secretWord.length; j++) {
+    const tile = document.createElement('div');
+    tile.classList.add('tile');
+    row.appendChild(tile);
+  }
+  board.appendChild(row);
+}
+function goToPage() {
+        window.location.href = "bday2.html";  // Replace "yourpage.html" with the actual page
+    }
+function handleGuess(event) {
+  event.preventDefault();
+  const input = document.getElementById('guessInput');
+  const guess = input.value.toUpperCase();
+
+  if (guess.length !== secretWord.length) {
+    message.textContent = `Enter a ${secretWord.length}-letter word.`;
+    return;
+  }
+
+  if (currentAttempt >= maxAttempts) return;
+
+  const row = board.children[currentAttempt];
+  const secretArray = secretWord.split('');
+  const guessArray = guess.split('');
+  const colorResult = Array(secretWord.length).fill('gray');
+
+  // Step 1: Green match
+  for (let i = 0; i < secretWord.length; i++) {
+    if (guessArray[i] === secretArray[i]) {
+      colorResult[i] = 'green';
+      secretArray[i] = null;
+      guessArray[i] = null;
+    }
+  }
+
+  // Step 2: Yellow match
+  for (let i = 0; i < secretWord.length; i++) {
+    if (guessArray[i] && secretArray.includes(guessArray[i])) {
+      colorResult[i] = 'yellow';
+      secretArray[secretArray.indexOf(guessArray[i])] = null;
+    }
+  }
+
+  for (let i = 0; i < secretWord.length; i++) {
+    const tile = row.children[i];
+    tile.textContent = guess[i];
+    tile.classList.add(colorResult[i]);
+  }
+
+  if (guess === secretWord) {
+    message.textContent = "🎉 Correct! You nailed it.";
+    input.disabled = true;
+    return;
+  }
+
+  currentAttempt++;
+  input.value = "";
+
+  if (currentAttempt === maxAttempts) {
+    message.textContent = `❌ The correct word was: ${secretWord}`;
+    input.disabled = true;
+  }
+}
+    
+  </script>
+</body>
+</html>
