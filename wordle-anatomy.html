@@ -323,7 +323,7 @@ function handleGuess(event) {
   }
 
   if (guess === secretWord) {
-    message.textContent = "🎉 Correct! You nailed it.";
+    message.textContent = "omg you did it!! you're so smart";
     input.disabled = true;
     return;
   }
@@ -332,7 +332,7 @@ function handleGuess(event) {
   input.value = "";
 
   if (currentAttempt === maxAttempts) {
-    message.textContent = `❌ The correct word was: ${secretWord}`;
+    message.textContent = `womp womp.. the word was: ${secretWord}`;
     input.disabled = true;
   }
 }
