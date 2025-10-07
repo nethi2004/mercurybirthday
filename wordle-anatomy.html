@@ -260,6 +260,7 @@ const hint = selected.hint;
 const maxAttempts = 6;
 let currentAttempt = 0;
 
+
 const board = document.getElementById('board');
 const message = document.getElementById('message');
 const hintBox = document.getElementById('hint');
@@ -279,6 +280,11 @@ for (let i = 0; i < maxAttempts; i++) {
   }
   board.appendChild(row);
 }
+
+    function startNewGame() {
+        location.reload(); // Reloads the page to reset the game
+    }
+    
 function goToPage() {
         window.location.href = "bday2.html";  // Replace "yourpage.html" with the actual page
     }
